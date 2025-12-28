@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>React Test</title>
+  </head>
+  <body>
+    <!--
+      Reactアプリが「どこに描画されるか」を決めるための“マウント先”。
+      ここに対して React DOM が仮想DOMの結果を反映していく。
+    -->
+    <div id="root"></div>
+
+    <!--
+      type="module" にすることで ES Modules の import/export が使える。
+      ここでは esm.sh をCDNとして使い、React本体と ReactDOM をブラウザで直接読み込む構成。
+    -->
+    <script type="module">
+      /*
+        React本体。
+        - React.createElement など「要素（React Element）」を作る機能を提供する。
+        - JSX を使う場合も最終的には createElement 相当の呼び出しに変換される。
+      */
+      import React from 'https://esm.sh/react@19';
+
+      /*
+        ReactDOMのクライアント描画側API。
+        - React 18以降は createRoot による “Concurrent 対応のルート” を作るのが基本。
+        - それ以前の ReactDOM.render はレガシー扱い。
+      */
+      import { createRoot } from 'https://esm.sh/react-dom@19/client';
+
+      /*
+        1) まず「描画の起点（Root）」を作る。
+
+        createRoot(container) は、container DOM要素に紐づいた “Reactの管理領域” を作る。
+        ここから先、ReactはこのRoot配下のDOMを「差分更新」していく。
+
+        アルゴリズム的には：
+        - render で渡した React Element ツリーを元に「仮想DOM（Fiberツリー）」を構築
+        - 以前のツリーと比較（reconcile: 調停）し、どこが変わったか差分を求める
+        - 差分を実DOMに適用（commit）する、という二段階で更新が進む
+      */
+      const container = document.getElementById('root');
+      const root = createRoot(container);
+
+      /*
+        2) ルートに “描画したいUI” を渡す。
+
+        React.createElement(type, props, children...) は React Element を作るだけで、
+        この時点ではまだDOMは変わらない（ただの宣言データ）。
+
+        - type: 'h1' のような文字列なら「DOMタグ要素」
+        - type: 関数/クラスなら「ユーザー定義コンポーネント」
+        - props: 属性。ここでは null（属性なし）
+        - children: 子要素。ここでは文字列 'React works!'（テキストノードになる）
+      */
+      const element = React.createElement('h1', null, 'React works!');
+
+      /*
+        3) root.render(...) で React が “現在の理想のUI” として element を受け取る。
+
+        すると React は：
+        - element から Fiber（内部データ構造）を作り
+        - container(#root) の中身を「h1 + テキスト」にするための更新を計算し
+        - commitフェーズでDOMを生成/挿入する
+
+        重要ポイント：
+        - render をもう一度呼ぶと、Reactは「前回のUI」と「今回のUI」の差だけをDOMへ反映する。
+          つまり毎回全部作り直すのではなく、最小差分更新を狙うのが基本思想。
+      */
+      root.render(element);
+    </script>
+  </body>
+</html>
