@@ -1,0 +1,65 @@
+<!doctype html>
+<!--
+  これは Vite + React（main.tsx から起動する構成）の “エントリーHTML”。
+  Reactコードそのものはここには書かれず、/src/main.tsx がアプリを初期化して #root に描画する。
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!--
+      文字コードをUTF-8に固定する。
+      - React自体のアルゴリズムとは無関係だが、DOMテキスト（日本語含む）の表示や
+        HTMLの解釈の安定性に関わるため、初期化段階として重要。
+    -->
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <!--
+      favicon（ブラウザタブのアイコン）。
+      - /vite.svg は Vite の開発テンプレートでよく使われるデフォルト。
+      - これはブラウザUI要素であり、Reactレンダリングの仕組みには影響しない。
+    -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+      レスポンシブ表示のための viewport 設定。
+      - モバイル表示の拡大率などを決める。
+      - これも React の描画アルゴリズムそのものではなく、レイアウト/表示に影響する。
+    -->
+    <title>hello-world</title>
+    <!--
+      ページタイトル（ブラウザタブに表示される）。
+      - React側で document.title を更新しない限り、ここで設定した値が初期値になる。
+      - SPAではルーティングやページ単位のタイトル変更を React側で行うことも多いが、
+        「初期HTMLのタイトル」はこの <title> が担う。
+    -->
+  </head>
+
+  <body>
+    <!--
+      Reactアプリの “マウント先”。
+      - ReactDOM.createRoot(...) の container にこの要素が渡されることが多い。
+      - React は以後 #root 配下のDOMを「管理対象」として差分更新（reconcile→commit）していく。
+      - ここはアプリの境界（ルート）であり、Reactの仮想DOM（Fiberツリー）の “根” が対応する。
+    -->
+    <div id="root"></div>
+
+    <!--
+      ここが Vite 開発体験の肝。
+
+      type="module" + src="/src/main.tsx" により、
+      - ブラウザが ES Modules として main.tsx を読み込む
+      - ただし実際には「開発中」は Vite dev server が /src/main.tsx を変換して配信する
+        （TypeScript/TSX をそのままブラウザが実行できるわけではなく、
+         Vite がトランスパイルして ESM として提供する）
+
+      /src/main.tsx の役割（典型例）：
+      - React を import
+      - ReactDOM から createRoot を import
+      - document.getElementById('root') を取得
+      - root.render(<App />) でアプリを描画開始
+
+      つまりこの1行は、
+      「HTMLは最小限の骨組みだけ用意して、実際のUI構築・更新アルゴリズムは
+       main.tsx（=Reactランタイム）に委ねる」という SPA の起動スイッチである。
+    -->
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
